@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser
+from django.views.decorators.csrf import csrf_exempt
+import requests
 from .serializers import ProductSerializer
 
 # Create your views here.
