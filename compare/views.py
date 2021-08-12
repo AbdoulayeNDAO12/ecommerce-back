@@ -60,7 +60,26 @@ def scrapSubCatJumia():
         print("An error occured")
     return listSubCat
 
+def scrapCatJumia():
+    tableau=[]
+    URL = 'https://discount-senegal.com/'    
+    try:
+        page = requests.get(URL)
+        soup = BeautifulSoup(page.content, 'html.parser') 
+        category = soup.find_all('li',class_='menu-item-object-product_cat')
+        for cat in category:
+            catName=cat.text
+            catLink=cat.a['href']
+            tableau.append({'catName':catName,'catLink':catLink})
+    except:
+        print("An error occured")
+    result = []
+    for cat in tableau:
+        if cat not in result:
+           result.append({'catName':cat['catName'],'catLink':cat['catLink']})
 
+    return result
+    
 def scrapJumia(keyWord):
     URL = 'https://www.jumia.sn/catalog/?q='+str(keyWord)
     #https://www.jumia.sn/ordinateurs-accessoires-informatique/
