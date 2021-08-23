@@ -127,6 +127,48 @@ def scrapSubCatExpat():
                  result.append({'catName':cat['catName'],'subCatName':cat['subCatName'],'subCatLink':cat['subCatLink']})
         print(result)
 
+# Script for scraping all categories in expat coin-afrique
+def scrapCatCoinAfrique():
+        tableau=[]
+        URL = 'https://sn.coinafrique.com/'    
+        try:
+            page = requests.get(URL)
+            soup = BeautifulSoup(page.content, 'html.parser') 
+            category = soup.find_all('li',class_='category')
+            for cat in category:         
+               catLink=cat.a['href']
+               catName=cat.a.span.text
+               tableau.append({'catName':catName,'catLink':catLink})
+        except Exception as e:
+                trace_back = traceback.format_exc()
+                message = str(e)+ " " + str(trace_back)
+                print (message)
+        return tableau
+
+# Script for scraping all Subcategories in coin-afrique website
+def scrapSubCatCoinAfrique():
+        categories=scrapCatCoinAfrique()
+        tableau=[]    
+        try:
+            for category in categories:
+                    URL = 'https://sn.coinafrique.com'+category['catLink']
+                    page = requests.get(URL)
+                    soup = BeautifulSoup(page.content, 'html.parser') 
+                    category2 = soup.find_all('li',class_='category')
+                    for cat in category2:         
+                        subCatLink=cat.a['href']
+                        subCatName=cat.a['data-category-name'] 
+                        tableau.append({'catName':category['catName'],'subCatName':subCatName,'subCatLink':subCatLink})
+        except Exception as e:
+            trace_back = traceback.format_exc()
+            message = str(e)+ " " + str(trace_back)
+            print (message)
+        result = []
+        for cat in tableau:
+            if cat not in result:
+                 result.append({'catName':cat['catName'],'subCatName':cat['subCatName'],'subCatLink':cat['subCatLink']})
+        print(result)
+
 
 # Script for scraping products in jumia website
 def scrapJumia(keyWord):
