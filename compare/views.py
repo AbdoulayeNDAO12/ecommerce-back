@@ -228,6 +228,29 @@ def scrapWellmah(keyWord):
         return tableau
     except:
         return []
+
+def scraptDiscountSenegal():
+    
+    tableau=[]
+    URL ='https://discount-senegal.com/categorie-produit/maison-et-deco/'
+    try:
+        page= requests.get(URL)
+        soup=BeautifulSoup(page.content,'html.parser')
+        products=soup.find_all('li',class_='product')
+        for product in products:
+            srcEl=product.find('div',class_='mf-product-thumbnail')
+            src=srcEl.a['href']
+            image=srcEl.a.img['src']
+            infoEl=product.find('div',class_='mf-product-content')
+            name= infoEl.h2.text
+            priceEl=product.find('span',class_='price')
+            price= priceEl.find('span',class_='woocommerce-Price-amount amount').text.strip()
+            tableau.append({"image":image,"price":price,"name":name,"src":src,"category":''}) 
+    except Exception as e:
+        trace_back = traceback.format_exc()
+        message = str(e)+ " " + str(trace_back)
+        print (message)
+    return tableau
     
 # Create your views here.
 @csrf_exempt
