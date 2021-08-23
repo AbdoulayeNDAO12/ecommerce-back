@@ -17,6 +17,7 @@ tableau = []
 parametre="angular"
 jumiaURLTab=["?page=2#catalog-listing","?page=3#catalog-listing"]
 
+# Script for scraping all categories in JUMIA website
 def scrapCatJumia():
     tableau=[]
     URL = 'https://www.jumia.sn/'    
@@ -38,6 +39,7 @@ def scrapCatJumia():
         print("An error occured")
     return tableau
 
+# Script for scraping all Subcategories in jumia website
 def scrapSubCatJumia():
     table=scrapCatJumia()
     listSubCat=[]
@@ -60,7 +62,8 @@ def scrapSubCatJumia():
         print("An error occured")
     return listSubCat
 
-def scrapCatJumia():
+# Script for scraping all categories and Subcategories in Discount website
+def scrapCatDiscount():
     tableau=[]
     URL = 'https://discount-senegal.com/'    
     try:
@@ -79,10 +82,55 @@ def scrapCatJumia():
            result.append({'catName':cat['catName'],'catLink':cat['catLink']})
 
     return result
-    
+
+
+# Script for scraping all Categories in expat website
+def scrapCatExpat():
+        tableau=[]
+        URL = 'https://www.expat-dakar.com/'    
+        try:
+            page = requests.get(URL)
+            soup = BeautifulSoup(page.content, 'html.parser') 
+            category = soup.find_all('div',class_='home-category')
+            for cat in category:                
+               catLink=cat.a['href']
+               catName=cat.find('span',class_='home-category__header__title').text.strip()
+               tableau.append({'catName':catName,'catLink':catLink})
+        except Exception as e:
+                trace_back = traceback.format_exc()
+                message = str(e)+ " " + str(trace_back)
+                print (message)
+        result = []
+        for cat in tableau:
+           if cat not in result:
+               result.append({'catName':cat['catName'],'catLink':cat['catLink']})
+        return result
+
+# Script for scraping all Subcategories in expat website
+def scrapSubCatExpat():
+        categories=scrapCatExpat()
+        tableau=[]   
+        try:
+            for categoryEl in categories:
+                page2 = requests.get(categoryEl['catLink'])
+                soup2 = BeautifulSoup(page2.content, 'html.parser') 
+                category2 = soup2.find_all('li',class_='filter__category-list-item')
+                for cat in category2:
+                    tableau.append({'catName':categoryEl['catName'],'subCatName':cat.a.text.strip(),'subCatLink':cat.a['href']})
+        except Exception as e:
+                    trace_back = traceback.format_exc()
+                    message = str(e)+ " " + str(trace_back)
+                    print (message)
+        result = []
+        for cat in tableau:
+            if cat not in result:
+                 result.append({'catName':cat['catName'],'subCatName':cat['subCatName'],'subCatLink':cat['subCatLink']})
+        print(result)
+
+
+# Script for scraping products in jumia website
 def scrapJumia(keyWord):
     URL = 'https://www.jumia.sn/catalog/?q='+str(keyWord)
-    #https://www.jumia.sn/ordinateurs-accessoires-informatique/
     try:
         page = requests.get(URL)
         soup = BeautifulSoup(page.content, 'html.parser')
@@ -94,19 +142,16 @@ def scrapJumia(keyWord):
             name = info.find('h3',class_='name').text
             price = info.find('div',class_='prc').text
             category=article.find('a')['data-category']
-            # old_price = info.find('div',class_='old').text
-            # tableau.append(name)
-            # tableau.append(price)
-            # tableau.append(old_price.text.strip())
             tableau.append({"image":image,"price":price,"name":name,"src":src,"category":category}) 
         return tableau  
     except:
         return []
 
+
+# Script for scraping products in senAchat website
 def scrapSenAchat(keyWord):
     
     URL = "https://www.senachat.com/search?q="+keyWord
-    #https://www.senachat.com/category/informations
     try:        
         page = requests.get(URL)
         soup = BeautifulSoup(page.content, 'html.parser')
@@ -121,10 +166,11 @@ def scrapSenAchat(keyWord):
     except:
         return []
 
+
+# Script for scraping products in coniAfrique website
 def scrapCoinAfrique(keyWord):
     URL = "https://sn.coinafrique.com/search?category=&keyword="+keyWord
     baseUrl="https://sn.coinafrique.com"
-    #https://sn.coinafrique.com/categorie/mode-et-beaute
     try:         
         page = requests.get(URL)
         soup = BeautifulSoup(page.content, 'html.parser')
@@ -141,6 +187,7 @@ def scrapCoinAfrique(keyWord):
         return []
         
 
+# Script for scraping product in expat website
 def scrapExpatDakar(keyWord):    
     URL = "https://www.expat-dakar.com/dernieres-annonces?txt="+keyWord
     baseUrl="https://www.expat-dakar.com"
@@ -163,6 +210,8 @@ def scrapExpatDakar(keyWord):
     except:
         return []
 
+
+# Script for scraping products in wellmah website
 def scrapWellmah(keyWord):
     URL = "https://www.wellmah.com/?s="+keyWord+"&v=92666505ce75"
     #https://www.wellmah.com/boutique/electronique/?v=92666505ce75
