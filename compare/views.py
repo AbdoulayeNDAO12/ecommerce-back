@@ -170,6 +170,29 @@ def scrapSubCatCoinAfrique():
         print(result)
 
 
+# Script for scraping categories in senAchat website
+def scrapCatWellmah():
+        tableauCat=[]
+        result=[]
+        URL = 'https://www.wellmah.com/'    
+        # try:
+        page = requests.get(URL)
+        soup = BeautifulSoup(page.content, 'html.parser')   
+        categories = soup.find_all('li',class_='menu-item')
+        try:
+            for cat in categories:  
+                catLink=cat.a['href']
+                catName=cat.text
+                tableauCat.append({'catName':catName,'catLink':catLink})
+        except Exception as e:
+                trace_back = traceback.format_exc()
+                message = str(e)+ " " + str(trace_back)
+                print (message)
+        for elemnt in tableauCat:
+            if elemnt not in result:
+                result.append(elemnt)
+        return result 
+
 # Script for scraping products in senAchat website
 def scrapCatSenAchat():
         tableauCat=[]
